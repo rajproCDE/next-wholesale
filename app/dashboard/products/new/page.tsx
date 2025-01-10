@@ -1,22 +1,43 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient'; // Adjust the path if needed
 
 export default function NewProduct() {
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState('')
-  const [category, setCategory] = useState('')
-  const [stock, setStock] = useState('')
-  const router = useRouter()
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [stock, setStock] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log('New product:', { name, price, category, stock })
-    // Redirect to products page
-    router.push('/dashboard/products')
-  }
+    e.preventDefault();
+
+    try {
+      const { data, error } = await supabase.from('products').insert([
+        {
+          name,
+          price: parseFloat(price),
+          category,
+          stock: parseInt(stock),
+        },
+      ]);
+
+      if (error) {
+        console.error('Error adding product:', error.message);
+        alert('Failed to add product.');
+        return;
+      }
+
+      console.log('Product added:', data);
+      // Redirect to products page
+      router.push('/dashboard/products');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred.');
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -84,6 +105,5 @@ export default function NewProduct() {
         </div>
       </form>
     </div>
-  )
+  );
 }
-
