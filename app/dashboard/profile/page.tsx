@@ -1,31 +1,29 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
 export default function Profile() {
-  const [name, setName] = useState('John Doe')
-  const [email, setEmail] = useState('john@example.com')
-  const [userType, setUserType] = useState('Wholesaler')
-  const [address, setAddress] = useState('123 Main St, City, Country')
+  const [name, setName] = useState('John Doe');
+  const [email, setEmail] = useState('john@example.com');
+  const [userType, setUserType] = useState('Wholesaler');
+  const [address, setAddress] = useState('123 Main St, City, Country');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the updated data to your backend
-    console.log('Profile update:', { name, email, userType, address })
-    // Show a success message or handle errors
-  }
+    e.preventDefault();
+    console.log('Profile update:', { name, email, userType, address });
+  };
 
   return (
     <div className="flex min-h-screen flex-col p-6 md:p-24">
       <h1 className="text-4xl font-bold mb-8">User Profile</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-lg">
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
             Name:
           </label>
           <input
-            type="text"
             id="name"
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -33,17 +31,12 @@ export default function Profile() {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+          <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
             Email:
           </label>
           <input
+            id="email"
             type="email"
-            id="email"
-            value={email}
-            onChange={(I understand the task. I'll continue the text stream from the cut-off point, maintaining coherence and consistency with the previous text. Here's the continuation:
-
-email"
-            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -51,7 +44,7 @@ email"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="userType">
+          <label htmlFor="userType" className="block text-gray-700 text-sm font-bold mb-2">
             User Type:
           </label>
           <select
@@ -65,7 +58,7 @@ email"
           </select>
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
+          <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
             Address:
           </label>
           <textarea
@@ -77,16 +70,13 @@ email"
             required
           ></textarea>
         </div>
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Update Profile
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Update Profile
+        </button>
       </form>
     </div>
-  )
+  );
 }
-
