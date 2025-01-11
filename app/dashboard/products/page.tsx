@@ -1,29 +1,61 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient'; // Adjust the path as needed
 
 type Product = {
-  id: number
-  name: string
-  price: number
-  category: string
-  stock: number
-}
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  stock: number;
+};
 
 export default function Products() {
-  const [products, setProducts] = useState<Product[]>([
-    { id: 1, name: 'Product 1', price: 10.99, category: 'Category 1', stock: 100 },
-    { id: 2, name: 'Product 2', price: 15.99, category: 'Category 2', stock: 50 },
-    { id: 3, name: 'Product 3', price: 20.99, category: 'Category 1', stock: 75 },
-  ])
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filter, setFilter] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [filter, setFilter] = useState('')
+  // Fetch products from Supabase
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
 
+        if (error) {
+          setError('Failed to fetch products.');
+          console.error('Error fetching products:', error.message);
+        } else {
+          setProducts(data || []);
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Filter products based on input
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(filter.toLowerCase()) ||
     product.category.toLowerCase().includes(filter.toLowerCase())
-  )
+  );
+
+  if (loading) {
+    return <p className="text-center text-lg">Loading products...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
   return (
     <div className="flex min-h-screen flex-col p-6 md:p-24">
@@ -41,7 +73,7 @@ export default function Products() {
         {filteredProducts.map(product => (
           <div key={product.id} className="bg-white p-4 rounded shadow">
             <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-            <p>Price: ${product.price.toFixed(2)}</p>
+            <p>Price: &#8377;{product.price.toFixed(2)}</p>
             <p>Category: {product.category}</p>
             <p>In Stock: {product.stock}</p>
             <Link href={`/dashboard/products/${product.id}`} className="text-blue-500 hover:text-blue-700">
@@ -54,6 +86,5 @@ export default function Products() {
         Add New Product
       </Link>
     </div>
-  )
+  );
 }
-

@@ -1,26 +1,66 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient'; // Adjust the path as per your project
 
 type InventoryItem = {
-  id: number
-  name: string
-  currentStock: number
-  minStock: number
-  maxStock: number
-}
+  id: number;
+  name: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number;
+};
 
 export default function Inventory() {
-  const [inventory, setInventory] = useState<InventoryItem[]>([
-    { id: 1, name: 'Product A', currentStock: 100, minStock: 50, maxStock: 200 },
-    { id: 2, name: 'Product B', currentStock: 75, minStock: 30, maxStock: 150 },
-    { id: 3, name: 'Product C', currentStock: 25, minStock: 20, maxStock: 100 },
-  ])
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        // Fetching `name` and `stock` (as `currentStock`) from the product table
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, name, stock');
+
+        if (error) {
+          setError('Failed to fetch inventory data.');
+          console.error('Error fetching inventory:', error.message);
+        } else if (data) {
+          // Adding static values for `minStock` and `maxStock`
+          const formattedData = data.map((item) => ({
+            ...item,
+            minStock: 50, // Static minimum stock
+            maxStock: 200, // Static maximum stock
+          }));
+          setInventory(formattedData);
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
 
   const handleStockUpdate = (id: number, newStock: number) => {
-    setInventory(inventory.map(item => 
-      item.id === id ? { ...item, currentStock: newStock } : item
-    ))
+    setInventory((prevInventory) =>
+      prevInventory.map((item) =>
+        item.id === id ? { ...item, currentStock: newStock } : item
+      )
+    );
+  };
+
+  if (loading) {
+    return <p className="text-center text-lg">Loading inventory...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
   }
 
   return (
@@ -54,7 +94,7 @@ export default function Inventory() {
                   {item.name}
                 </td>
                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                  {item.currentStock}
+                  {item.stock}
                 </td>
                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                   {item.minStock}
@@ -82,6 +122,5 @@ export default function Inventory() {
         </table>
       </div>
     </div>
-  )
+  );
 }
-
